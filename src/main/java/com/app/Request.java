@@ -22,7 +22,7 @@ public class Request {
         
         DependentResponse response = sendRequest(request);
 
-        List<DependentResult> dependents = new ArrayList<>(response.pageCount);
+        List<DependentResult> dependents = new ArrayList<>(response.totalResultCount);
         dependents.addAll(response.components);
 
         request.page = 1;
