@@ -1,2 +1,0 @@
-POST https://central.sonatype.com/api/internal/browse/dependents
-{"purl":"pkg:maven/com.netflix.graphql.dgs/graphql-dgs@8.1.1","page":0,"size":10,"searchTerm":"","filter":["dependencyRef:DIRECT"]}
