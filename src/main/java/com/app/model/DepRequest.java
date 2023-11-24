@@ -2,20 +2,20 @@ package com.app.model;
 
 import java.util.List;
 
-public class DependentRequest {
+public class DepRequest {
     public String purl;
     public int page;
     public int size;
     public String searchTerm;
     public List<String> filter;
 
-    public DependentRequest(String group, String artifact, String version) {
+    public DepRequest(Identifier id) {
         purl = new StringBuilder("pkg:maven/")
-                .append(group)
+                .append(id.groupId)
                 .append("/")
-                .append(artifact)
+                .append(id.artifactId)
                 .append("@")
-                .append(version)
+                .append(id.version)
                 .toString();
 
         page = 0;

@@ -11,23 +11,33 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-import com.app.model.DependentRequest;
-import com.app.model.DependentResponse;
-import com.app.model.DependentResult;
+import com.app.model.DepRequest;
+import com.app.model.DepResponse;
+import com.app.model.Identifier;
+import com.app.model.DepResponse.DepResult;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class Request {
-    public static List<DependentResult> getDependents(String group, String artifact, String version) throws IOException {
-        DependentRequest request = new DependentRequest(group, artifact, version);
-        
-        DependentResponse response = sendRequest(request);
+    public enum RequestType {
+        DEPENDENCY, SOURCE
+    }
 
-        List<DependentResult> dependents = new ArrayList<>(response.totalResultCount);
+    public static final String dependentsUrl = "https://central.sonatype.com/api/internal/browse/dependents";
+    public static final String dependenciesUrl = "https://central.sonatype.com/api/internal/browse/dependencies";
+
+    public static List<DepResult> getDep(RequestType type, Identifier identifier) throws IOException {
+        return getDep(type, new DepRequest(identifier));
+    }
+
+    public static List<DepResult> getDep(RequestType type, DepRequest request) throws IOException {        
+        DepResponse response = sendDepRequest(type, request);
+
+        List<DepResult> dependents = new ArrayList<>(response.totalResultCount);
         dependents.addAll(response.components);
 
         request.page = 1;
-        while (request.page != response.pageCount) {
-            response = sendRequest(request);
+        while (request.page < response.pageCount) {
+            response = sendDepRequest(type, request);
             dependents.addAll(response.components);
 
             request.page += 1;
@@ -36,13 +46,11 @@ public class Request {
         return dependents;
     }
 
-    private static DependentResponse sendRequest(DependentRequest request) throws IOException {
+    private static DepResponse sendDepRequest(RequestType type, DepRequest request) throws IOException {
         String requestBodyString = new ObjectMapper().writeValueAsString(request);
 
-        String url = "https://central.sonatype.com/api/internal/browse/dependents";
-
         try (CloseableHttpClient client = HttpClients.createDefault()) {
-            HttpPost postRequest = new HttpPost(url);
+            HttpPost postRequest = new HttpPost(type == RequestType.SOURCE ? dependentsUrl : dependenciesUrl);
 
             StringEntity body = new StringEntity(requestBodyString);
             postRequest.setEntity(body);
@@ -56,7 +64,7 @@ public class Request {
                 
                 String responseBody = EntityUtils.toString(response.getEntity());
 
-                return new ObjectMapper().readValue(responseBody, DependentResponse.class);
+                return new ObjectMapper().readValue(responseBody, DepResponse.class);
             }
         }
     }
