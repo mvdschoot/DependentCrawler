@@ -1,5 +1,4 @@
 target
 notes.txt
 .vscode
-storage.graphml
-*tmp*
+results

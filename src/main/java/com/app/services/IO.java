@@ -77,7 +77,7 @@ public class IO {
     }
 
     public static void storeGraphML(Graph<Library, Edge> graph, String location) throws IOException {
-        Writer writer = new BufferedWriter(new FileWriter(location));
+        Writer writer = new BufferedWriter(new FileWriter("results/" + location));
 
         GraphMLExporter<Library, Edge> exporter = new GraphMLExporter<>((l) -> vertexNameProvider(l));
         exporter.setVertexAttributeProvider((l) -> vertexExporter(l));
@@ -98,17 +98,17 @@ public class IO {
      * Result queue not included, should be empty.
      */
     public static void storeGraphMLpartially(PartialStorage variables) throws IOException {
-        FileOutputStream fileOutputStream = new FileOutputStream("graph.tmp");
+        FileOutputStream fileOutputStream = new FileOutputStream("results/graph.tmp");
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(variables.graph);
         objectOutputStream.close();
 
-        fileOutputStream = new FileOutputStream("requestQueue.tmp");
+        fileOutputStream = new FileOutputStream("results/requestQueue.tmp");
         objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(variables.requestQueue);
         objectOutputStream.close();
 
-        fileOutputStream = new FileOutputStream("depStore.tmp");
+        fileOutputStream = new FileOutputStream("results/depStore.tmp");
         objectOutputStream = new ObjectOutputStream(fileOutputStream);
         objectOutputStream.writeObject(variables.depStore);
         objectOutputStream.close();
@@ -116,17 +116,17 @@ public class IO {
 
     public static PartialStorage loadPartialStorage() throws IOException {
         try {
-            FileInputStream fileInputStream = new FileInputStream("graph.tmp");
+            FileInputStream fileInputStream = new FileInputStream("results/graph.tmp");
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
             Graph<Library, Edge> graph = (Graph<Library, Edge>) objectInputStream.readObject();
             objectInputStream.close();
 
-            fileInputStream = new FileInputStream("requestQueue.tmp");
+            fileInputStream = new FileInputStream("results/requestQueue.tmp");
             objectInputStream = new ObjectInputStream(fileInputStream);
             Queue<SimpleRequest> requestQueue = (Queue<SimpleRequest>) objectInputStream.readObject();
             objectInputStream.close();
 
-            fileInputStream = new FileInputStream("depStore.tmp");
+            fileInputStream = new FileInputStream("results/depStore.tmp");
             objectInputStream = new ObjectInputStream(fileInputStream);
             Map<Identifier, Library> depStore = (Map<Identifier, Library>) objectInputStream.readObject();
             objectInputStream.close();

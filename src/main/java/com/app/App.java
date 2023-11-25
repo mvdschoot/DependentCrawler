@@ -25,13 +25,5 @@ public class App
         } catch (IOException | InterruptedException | TooManyRequestsException e) {
             System.out.println("error");
         }
-
-        // try {
-        //     Processor processor = new Processor(TraverseType.BOTH);
-        //     processor.start(new Identifier(group, artifact, version), 8);
-        //     processor.store("storage.graphml");
-        // } catch (IOException | InterruptedException | TooManyRequestsException e) {
-        //     System.out.println("error");
-        // }
     }
 }
