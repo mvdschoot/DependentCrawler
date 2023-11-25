@@ -1,11 +1,12 @@
 package com.app.model;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import com.app.Request.RequestType;
-import com.app.model.DepResponse.DepResult;
+import com.app.model.HttpResponse.HttpContent;
+import com.app.services.Requester.RequestType;
 
-public class Identifier {
+public class Identifier implements Serializable {
     public String groupId;
     public String artifactId;
     public String version;
@@ -16,7 +17,7 @@ public class Identifier {
         this.version = version;
     }
 
-    public Identifier(RequestType type, DepResult dependencyResult) {
+    public Identifier(RequestType type, HttpContent dependencyResult) {
         if (RequestType.DEPENDENCY == type) {
             groupId = dependencyResult.dependencyNamespace;
             artifactId = dependencyResult.dependencyName;
