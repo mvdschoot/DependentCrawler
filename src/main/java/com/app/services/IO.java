@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Writer;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
 
@@ -21,7 +22,7 @@ import org.jgrapht.nio.graphml.GraphMLExporter.AttributeCategory;
 import com.app.model.Edge;
 import com.app.model.Identifier;
 import com.app.model.Library;
-import com.app.model.Request.SimpleRequest;
+import com.app.model.Requests.SimpleRequest;
 
 public class IO {
     public static class PartialStorage {
@@ -45,15 +46,24 @@ public class IO {
     // }
 
     public static Map<String, Attribute> vertexExporter(Library library) {
-        return Map.of(
-            "Id", DefaultAttribute.createAttribute(library.getIdentifier().toString()),
-            "GroupId", DefaultAttribute.createAttribute(library.getIdentifier().groupId),
-            "ArtifactId", DefaultAttribute.createAttribute(library.getIdentifier().artifactId),
-            "Version", DefaultAttribute.createAttribute(library.getIdentifier().version),
-            "Scope", DefaultAttribute.createAttribute(library.getScope()),
-            "Licenses", DefaultAttribute.createAttribute(String.join(";", library.getLicenses())),
-            "VulnerabilityCount", DefaultAttribute.createAttribute(library.getVulnerabilityCount())
-        );
+        Map<String, Attribute> attributes = new HashMap<>();
+
+        attributes.put("Id", DefaultAttribute.createAttribute(library.getIdentifier().toString()));
+        attributes.put("GroupId", DefaultAttribute.createAttribute(library.getIdentifier().groupId));
+        attributes.put("ArtifactId", DefaultAttribute.createAttribute(library.getIdentifier().artifactId));
+        attributes.put("Version", DefaultAttribute.createAttribute(library.getIdentifier().version));
+        attributes.put("Scope", DefaultAttribute.createAttribute(library.getScope()));
+        attributes.put("Licenses", DefaultAttribute.createAttribute(String.join(";", library.getLicenses())));
+        attributes.put("VulnerabilityCount", DefaultAttribute.createAttribute(library.getVulnerabilityCount()));
+        attributes.put("Categories", DefaultAttribute.createAttribute(String.join(";", library.getCategories())));
+        attributes.put("DependencyCount", DefaultAttribute.createAttribute(library.getDependencyCount()));
+        attributes.put("DependentCount", DefaultAttribute.createAttribute(library.getDependentCount()));
+        attributes.put("PopularityAppCount", DefaultAttribute.createAttribute(library.getPopularityAppCount()));
+        attributes.put("PopularityOrgCount", DefaultAttribute.createAttribute(library.getPopularityOrgCount()));
+        attributes.put("ReleaseTime", DefaultAttribute.createAttribute(library.getReleaseTime()));
+        attributes.put("Status", DefaultAttribute.createAttribute(library.getStatus().name()));
+        
+        return attributes;
     }
 
     public static void registerVertexAttributes(GraphMLExporter<Library, Edge> exporter) {
@@ -64,6 +74,13 @@ public class IO {
         exporter.registerAttribute("Scope", AttributeCategory.NODE, AttributeType.STRING);
         exporter.registerAttribute("Licenses", AttributeCategory.NODE, AttributeType.STRING);
         exporter.registerAttribute("VulnerabilityCount", AttributeCategory.NODE, AttributeType.INT);
+        exporter.registerAttribute("Categories", AttributeCategory.NODE, AttributeType.STRING);
+        exporter.registerAttribute("DependencyCount", AttributeCategory.NODE, AttributeType.INT);
+        exporter.registerAttribute("DependentCount", AttributeCategory.NODE, AttributeType.INT);
+        exporter.registerAttribute("PopularityAppCount", AttributeCategory.NODE, AttributeType.INT);
+        exporter.registerAttribute("PopularityOrgCount", AttributeCategory.NODE, AttributeType.INT);
+        exporter.registerAttribute("ReleaseTime", AttributeCategory.NODE, AttributeType.STRING);
+        exporter.registerAttribute("Status", AttributeCategory.NODE, AttributeType.STRING);
     }
 
     public static Map<String, Attribute> edgeExporter(Edge edge) {
@@ -76,8 +93,8 @@ public class IO {
         exporter.registerAttribute("Relation", AttributeCategory.EDGE, AttributeType.STRING);
     }
 
-    public static void storeGraphML(Graph<Library, Edge> graph, String location) throws IOException {
-        Writer writer = new BufferedWriter(new FileWriter("results/" + location));
+    public static void storeGraphML(Graph<Library, Edge> graph, String fileName) throws IOException {
+        Writer writer = new BufferedWriter(new FileWriter("results/" + fileName));
 
         GraphMLExporter<Library, Edge> exporter = new GraphMLExporter<>((l) -> vertexNameProvider(l));
         exporter.setVertexAttributeProvider((l) -> vertexExporter(l));

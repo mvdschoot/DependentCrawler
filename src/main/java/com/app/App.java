@@ -14,15 +14,16 @@ public class App
         String group = "org.springframework";
         String artifact = "spring-webmvc";
         String version = "6.1.1";
-        // String group = "org.springframework.boot";
-        // String artifact = "spring-boot-starter-web";
-        // String version = "3.2.0";
+        // String group = "org.junit.platform";
+        // String artifact = "junit-platform-commons";
+        // String version = "1.10.1";
 
+        Identifier id = new Identifier(group, artifact, version);
+        TraverseType traverseType = TraverseType.DOWN;
         try {
-            Processor processor = new Processor(TraverseType.BOTH);
-            processor.start(new Identifier(group, artifact, version), 8);
-            processor.store("storage.graphml");
-        } catch (IOException | InterruptedException | TooManyRequestsException e) {
+            Processor processor = new Processor(traverseType, 8, id);
+            processor.store(traverseType.name() + ":" + id.toString() + ".graphml");
+        } catch (IOException | TooManyRequestsException e) {
             System.out.println("error");
         }
     }

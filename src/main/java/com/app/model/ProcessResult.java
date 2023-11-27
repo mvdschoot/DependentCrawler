@@ -2,11 +2,12 @@ package com.app.model;
 
 import java.util.List;
 
-import com.app.model.HttpResponse.HttpContent;
-import com.app.services.Requester.RequestType;
+import com.app.utils.LibraryStatus;
+import com.app.utils.RequestType;
 
-public class ProcessResult {
+public class ProcessResult<T> {
     public Identifier from;
-    public List<HttpContent> result;
+    public List<T> result;
     public RequestType type;
+    public LibraryStatus status;
 }

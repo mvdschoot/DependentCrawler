@@ -3,8 +3,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
-import com.app.model.HttpResponse.HttpContent;
-import com.app.services.Requester.RequestType;
+import com.app.utils.RequestType;
 
 public class Identifier implements Serializable {
     public String groupId;
@@ -17,15 +16,15 @@ public class Identifier implements Serializable {
         this.version = version;
     }
 
-    public Identifier(RequestType type, HttpContent dependencyResult) {
+    public Identifier(RequestType type, DependencyResponse dependencyResponse) {
         if (RequestType.DEPENDENCY == type) {
-            groupId = dependencyResult.dependencyNamespace;
-            artifactId = dependencyResult.dependencyName;
-            version = dependencyResult.dependencyVersion;
-        } else {
-            groupId = dependencyResult.sourceNamespace;
-            artifactId = dependencyResult.sourceName;
-            version = dependencyResult.sourceVersion;
+            groupId = dependencyResponse.dependencyNamespace;
+            artifactId = dependencyResponse.dependencyName;
+            version = dependencyResponse.dependencyVersion;
+        } else if (RequestType.SOURCE == type) {
+            groupId = dependencyResponse.sourceNamespace;
+            artifactId = dependencyResponse.sourceName;
+            version = dependencyResponse.sourceVersion;
         }
     }
 
