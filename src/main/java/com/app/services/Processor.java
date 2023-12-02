@@ -42,18 +42,7 @@ public class Processor {
         requestQueue = new ConcurrentLinkedQueue<>();
         exitSignal = new ExitSignal();
 
-        if (traverseType == TraverseType.DOWN) {
-            initializeNew(new SimpleRequest(RequestType.DEPENDENCY, initial));
-        } else if (traverseType == TraverseType.UP) {
-            initializeNew(new SimpleRequest(RequestType.SOURCE, initial));
-        } else {
-            initializeNew(new SimpleRequest(RequestType.SOURCE, initial));
-            initializeNew(new SimpleRequest(RequestType.DEPENDENCY, initial));
-        }
-        startThreads(threadNo);
-        mainLoop();
-        exitSignal.signalNow();
-        threads.forEach(Thread::interrupt);
+        next(traverseType, threadNo, initial);
     }
 
     /**
@@ -77,6 +66,21 @@ public class Processor {
         threads.forEach(Thread::interrupt);
     }
 
+    public void next(TraverseType traverseType, int threadNo, Identifier initial) throws IOException, TooManyRequestsException {
+        if (traverseType == TraverseType.DOWN) {
+            initializeNew(new SimpleRequest(RequestType.DEPENDENCY, initial));
+        } else if (traverseType == TraverseType.UP) {
+            initializeNew(new SimpleRequest(RequestType.SOURCE, initial));
+        } else {
+            initializeNew(new SimpleRequest(RequestType.SOURCE, initial));
+            initializeNew(new SimpleRequest(RequestType.DEPENDENCY, initial));
+        }
+        startThreads(threadNo);
+        mainLoop();
+        exitSignal.signalNow();
+        threads.forEach(Thread::interrupt);
+    }
+
     public void store(String fileName) throws IOException {
         IO.storeGraphML(graph, fileName);
     }
@@ -93,6 +97,12 @@ public class Processor {
                 time = System.currentTimeMillis();
                 insertResult(resultQueue.poll());
             } else if (!exitSignal.shouldContinue()) {
+                depStore.values().stream()
+                        .filter(l -> l.getStatus() == null)
+                        .forEach(l -> {
+                            l.setMissing();
+                            l.setStatus(LibraryStatus.PARTIAL);
+                        });
                 IO.storeGraphMLpartially(new PartialStorage(graph, requestQueue, depStore));
                 break;
             }

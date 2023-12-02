@@ -19,7 +19,7 @@ public class App
         // String version = "1.10.1";
 
         Identifier id = new Identifier(group, artifact, version);
-        TraverseType traverseType = TraverseType.DOWN;
+        TraverseType traverseType = TraverseType.BOTH;
         try {
             Processor processor = new Processor(traverseType, 8, id);
             processor.store(traverseType.name() + ":" + id.toString() + ".graphml");

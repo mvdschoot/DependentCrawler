@@ -1,5 +1,5 @@
 package com.app.utils;
 
 public enum LibraryStatus {
-    GOOD, MISSING
+    GOOD, MISSING, PARTIAL
 }
